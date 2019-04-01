@@ -5,7 +5,7 @@ const crypto  = require('crypto');
 const Dir     = require('./dir.js');
 const conflib = require('configuration-lib');
 const http    = require('http');
-const logger  = console; //require('logger-lib')('nfs');
+const logger  = require('logger-lib')('talon');
 const mixer   = require('mixer-lib');
 const mime    = require('mime');
 
@@ -35,7 +35,7 @@ function whenLoad(app_pool, exdata, config) {
 
   container.forMixer(app_pool);
   
-  console.log("http://localhost:"+ config.port +
+  logger.log("http://localhost:"+ config.port +
     "/page/index.html?init_service=/talon/init_service");
 }
 
