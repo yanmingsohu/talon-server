@@ -13,6 +13,10 @@
   "author": "yanming",
   "license": "ISC",
   "dependencies": {
-    "dish-lib": "^0.1.11"
+    "dish-lib": "^0.1.11",
+    "findit": "^2.0.0",
+    "jszip": "^3.2.1",
+    "mime": "^2.4.0",
+    "mixer-lib": "^0.2.11"
   }
 }

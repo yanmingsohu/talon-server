@@ -1,22 +1,22 @@
-module.exports = function services_nfs(container, logger, event_bus, store, config, wh_client, nfs) {
+module.exports = function services_nfs(container, logger, store, config, nfs) {
 // fsid 与 hdid 意义相同
 
 
-var plib      = require('path');
-var localfs   = require('fs');
-var mime      = require('mime');
-var findit    = require('findit');
-var ziplib    = require('./zip.js');
+const plib      = require('path');
+const localfs   = require('fs');
+const mime      = require('mime');
+const findit    = require('findit');
+const ziplib    = require('./zip.js');
 
-var baseurl   = '/cat/fs-';
-var EMPTY     = Buffer.from([]);
-var FIX_MTIME = 50; // 文件保存时间和立即读取的时间有出入
-var MAX_FILE  = 10 * 1024 * 1024; // 10M
-var LOCAL_ID  = '0001';
-var local_fs_pool = {};
+const baseurl   = config.base_url +'/';
+const EMPTY     = Buffer.from([]);
+const FIX_MTIME = 50; // 文件保存时间和立即读取的时间有出入
+const MAX_FILE  = 10 * 1024 * 1024; // 10M
+const local_fs_pool = {};
 
-for (var i=0; i< config.local_fs.length; ++i) {
-  var loc = config.local_fs[i];
+
+for (let i=0; i< config.local_fs.length; ++i) {
+  let loc = config.local_fs[i];
   local_fs_pool[loc.fsid] = loc;
   loc.fs = localfs;
 }
@@ -30,7 +30,7 @@ container.service(init_service, [
 ]);
 function init_service(req, resp, next) {
   // 可以打开指定 fs
-  var fsid = req.query.fsid || LOCAL_ID;
+  const fsid = req.query.fsid;
 
   getfs(fsid, function(err, fs, name, base) {
     if (err) return sendJson(resp, err);
@@ -73,42 +73,42 @@ container.service(list_fs, [
 function list_fs(req, resp, next) {
   var data = [];
 
-  if (req.is_admin_user) {
+  // if (req.is_admin_user) {
     for (var id in local_fs_pool) {
       data.push(local_fs_pool[id]);
     }
-  }
+  // }
 
-  req.user_res(nfs.res_type, function(err, list) {
-    if (err) return next(err);
-    var i = -1;
-    _next_drv();
+  // req.user_res(nfs.res_type, function(err, list) {
+  //   if (err) return next(err);
+  //   var i = -1;
+  //   _next_drv();
 
-    function _next_drv() {
-      if (++i >= list.length) return over();
-      var fsid = list[i];
+  //   function _next_drv() {
+  //     if (++i >= list.length) return over();
+  //     var fsid = list[i];
 
-      nfs.get_driver().state(fsid, function(err, st) {
-        if (err) logger.error(err.message);
-        if (st) {
-          data.push({
-            fsid : fsid,
-            name : st.note,
-          });
-        }
-        _next_drv();
-      });
-    }
+  //     nfs.get_driver().state(fsid, function(err, st) {
+  //       if (err) logger.error(err.message);
+  //       if (st) {
+  //         data.push({
+  //           fsid : fsid,
+  //           name : st.note,
+  //         });
+  //       }
+  //       _next_drv();
+  //     });
+  //   }
 
-  });
+  // });
 
-  function over() {
+  // function over() {
     resp.json({
       ret  : 0,
       msg  : 'ok',
       data : data,
     });
-  }
+  // }
 }
 
 
@@ -709,20 +709,20 @@ function unzip(req, resp) {
 function rep_process(req, resp, path_attr, id_attr, cb) {
   var fsid  = req.query[id_attr || 'fsid'];
 
-  if (req.is_admin_user) {
-    __get_fs();
-  } else {
-    resp.check_auth(fsid, nfs.res_type, __get_fs);
-  }
+  // if (req.is_admin_user) {
+  //   __get_fs();
+  // } else {
+  //   resp.check_auth(fsid, nfs.res_type, __get_fs);
+  // }
 
-  function __get_fs() {
+  // function __get_fs() {
     getfs(fsid, function(err, fs, name, base) {
       if (!fs) return resp.json({ ret : 8, msg : 'invalid fsid: ' + fsid });
       var path = plib.join(base, req.query[path_attr || 'path']);
 
       cb(fs, path, fsid, base);
     });
-  }
+  // }
 }
 
 
@@ -730,11 +730,13 @@ function getfs(fsid, cb) {
   var _fs = local_fs_pool[fsid];
   if (_fs) {
     return cb(null, _fs.fs, _fs.name, _fs.base);
+  } else {
+    return cb(new Error("cannot found fs: "+ fsid));
   }
-  nfs.get_hd(fsid, function(err, fs) {
-    if (err) return cb(err);
-    cb(null, fs, fs.note, '/');
-  });
+  // nfs.get_hd(fsid, function(err, fs) {
+  //   if (err) return cb(err);
+  //   cb(null, fs, fs.note, '/');
+  // });
 }
 
 
