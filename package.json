@@ -1,0 +1,18 @@
+{
+  "name": "talon-server",
+  "version": "1.0.0",
+  "description": "talon server with nodejs",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/yanmingsohu/talon-server"
+  },
+  "author": "yanming",
+  "license": "ISC",
+  "dependencies": {
+    "dish-lib": "^0.1.11"
+  }
+}
