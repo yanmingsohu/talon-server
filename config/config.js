@@ -17,10 +17,10 @@ module.exports = {
   },
 
   local_fs : [
-    { fsid : 'server', name: 'server', 
+    { name : 'Talon server source', fsid: 'server', 
       base: __dirname +'/../' },
       
-    { fsid : 'talon', name: 'talon', 
+    { name : 'Talon IDE source', fsid: 'talon', 
       base: '/Nodejs_Projects/person/davinci.prj/www/talon' },
   ],
 
@@ -28,5 +28,3 @@ module.exports = {
   base_url : '/talon',
   port: 88,
 };
-
-console.log(module.exports.local_fs)
